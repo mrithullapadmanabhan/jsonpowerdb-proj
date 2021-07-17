@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <html lang="en">
+        <head>
+            <title>JSONPOWERDB</title>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <link rel="stylesheet"
+                  href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+            <script
+            src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+            <script
+            src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        </head>
+        <body>
+            <div class="container">
+                <h2>Patient Information form</h2>
+                <form id="patForm" method="post">
+                    <div class="form-group">
+                        <span><label for="patId">Patient ID:</label> <label id="patIdMsg">
+                            </label></span>
+                        <input type="text" class="form-control" name="empId" id="patId"
+                               placeholder="Enter Patient ID" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="patName">Patient Name:</label>
+                        <input type="text" class="form-control" id="patName"
+                               placeholder="Enter Patient Name" name="patName">
+                    </div>
+                    <div class="form-group">
+                        <label for="patEmail">Email:</label>
+                        <input type="email" class="form-control" id="patEmail"
+                               placeholder="Enter Patient Email" name="patEmail">
+                    </div>
+                    <div class="form-group">
+                        <label for="patContact">Contact No.:</label>
+                        <input type="tel" class="form-control" id="patContact"
+                               placeholder="Enter Patient Contact No." name="patContact">
+                    </div>
+                    <div class="form-group">
+                        <label for="patDOB">Date of Birth:</label>
+                        <input type="date" class="form-control" id="patDOB"
+                               placeholder="Enter Patient Date of Birth" name="patDOB">
+                    </div>
+                    <div class="form-group">
+                        <label for="patDoc">Registered Doctor Name:</label>
+                        <input type="text" class="form-control" id="patDoc"
+                               placeholder="Enter Registered Doctor Name" name="patDoc">
+                    </div>
+                    <input type="button" class="btn btn-primary" id="empSave" value="Save"
+                           onclick="savePatient();">
+                </form>
+            </div>
+            <nav>
+                <ul class="pagination">
+                    <li class="page-item">
+                        <a href="index.html" class="page-link">Return to Home</a>
+                    </li>
+                </ul>
+            </nav>
+            <script>
+                $("#patId").focus();
+                function validateAndGetFormData() {
+                    var patIdVar = $("#patId").val();
+                    if (patIdVar === "") {
+                        alert("Patient ID Required Value");
+                        $("#patId").focus();
+                        return "";
+                    }
+                    var patNameVar = $("#patName").val();
+                    if (patNameVar === "") {
+                        alert("Patient Name is Required Value");
+                        $("#patName").focus();
+                        return "";
+                    }
+                    var patEmailVar = $("#patEmail").val();
+                    if (patEmailVar === "") {
+                        alert("Patient Email is Required Value");
+                        $("#patEmail").focus();
+                        return "";
+                    }
+                    var patContactVar = $("#patContact").val();
+                    if (patContactVar === "") {
+                        alert("Patient Contact No. is Required Value");
+                        $("#patContact").focus();
+                        return "";
+                    }
+                    var patDOBVar = $("#patDOB").val();
+                    if (patDOBVar === "") {
+                        alert("Patient Date of Birth is Required Value");
+                        $("#patDOB").focus();
+                        return "";
+                    }
+                    var patDocVar = $("#patDoc").val();
+                    if (patDocVar === "") {
+                        alert("Patient's registered Doctor name is Required Value");
+                        $("#patDoc").focus();
+                        return "";
+                    }
+                    var jsonStrObj = {
+                        patId: patIdVar,
+                        patName: patNameVar,
+                        patEmail: patEmailVar,
+                        patContact: patContactVar,
+                        patDOB: patDOBVar,
+                        patDoc: patDocVar,
+                    };
+                    return JSON.stringify(jsonStrObj);
+                }
+// This method is used to create PUT Json request.
+                function createPUTRequest(connToken, jsonObj, dbName, relName) {
+                    var putRequest = "{\n"
+                            + "\"token\" : \""
+                            + connToken
+                            + "\","
+                            + "\"dbName\": \""
+                            + dbName
+                            + "\",\n" + "\"cmd\" : \"PUT\",\n"
+                            + "\"rel\" : \""
+                            + relName + "\","
+                            + "\"jsonStr\": \n"
+                            + jsonObj
+                            + "\n"
+                            + "}";
+                    return putRequest;
+                }
+                function executeCommand(reqString, dbBaseUrl, apiEndPointUrl) {
+                    var url = dbBaseUrl + apiEndPointUrl;
+                    var jsonObj;
+                    $.post(url, reqString, function (result) {
+                        jsonObj = JSON.parse(result);
+                    }).fail(function (result) {
+                        var dataJsonObj = result.responseText;
+                        jsonObj = JSON.parse(dataJsonObj);
+                    });
+                    return jsonObj;
+                }
+                function resetForm() {
+                    $("#patId").val("");
+                    $("#patName").val("");
+                    $("#patEmail").val("");
+                    $("#patContact").val("");
+                    $("#patDOB").val("");
+                    $("#patDoc").val("");
+                    $("#patId").focus();
+                }
+                function savePatient() {
+                    var jsonStr = validateAndGetFormData();
+                    if (jsonStr === "") {
+                        return;
+                    }
+                    var putReqStr = createPUTRequest("90935846|-31948844863431733|90945245",
+                            jsonStr, "db1", "tb1");
+                    alert(putReqStr);
+                    jQuery.ajaxSetup({async: false});
+                    var resultObj = executeCommand(putReqStr,
+                            "http://api.login2explore.com:5577", "/api/iml");
+                    alert(JSON.stringify(resultObj));
+                    jQuery.ajaxSetup({async: true});
+                    resetForm();
+                }
+            </script>
+        </body>
+    </html>
+

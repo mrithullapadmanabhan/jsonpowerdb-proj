@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>JSONPOWERDB</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet"
+              href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script
+        src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script
+        src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <script src="http://login2explore.com/jpdb/resources/js/0.0.3/jpdb-commons.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <h2>UPDATING INFORMATION</h2>
+            <form id="patForm" method="post">
+                <div class="form-group">
+                    <h3>To update your information please enter your Patient ID</h3>
+                    <span><label for="patId">Patient ID:</label> <label id="patIdMsg">
+                        </label></span>
+                    <input type="text" class="form-control" name="patId" id="patId"
+                           placeholder="Enter Record Number" required>
+                </div>
+                <h3>You have access to update your Email ID</h3>
+                <div class="form-group">
+                    <label for="patEmail">Email:</label>
+                    <input type="email" class="form-control" id="patEmail"
+                           placeholder="Enter Patient Email" name="patEmail">
+                </div>
+                <input type="button" class="btn btn-primary" id="patSave" value="Save"
+                       onclick="updateData();">
+            </form>
+        </div>
+        <nav>
+            <ul class="pagination">
+                <li class="page-item">
+                    <a href="index.html" class="page-link">Return to Home</a>
+                </li>
+            </ul>
+        </nav>
+        <script>
+            function executeCommand(reqString, dbBaseUrl, apiEndPointUrl) {
+                var url = dbBaseUrl + apiEndPointUrl;
+                var jsonObj;
+                $.post(url, reqString, function (result) {
+                    jsonObj = JSON.parse(result);
+                }).fail(function (result) {
+                    var dataJsonObj = result.responseText;
+                    jsonObj = JSON.parse(dataJsonObj);
+                });
+                return jsonObj;
+            }
+            function updateData() {
+                var token = "90935846|-31948844863431733|90945245";
+                var dbname = "db1";
+                var relationName = "tb1";
+                var ID = parseInt(document.getElementById("patId").value);
+                var email = document.getElementById("patEmail").value;
+
+                var jsonObj = {
+                    patEmail: email,
+                };
+                var reqString = createUPDATERecordRequest(token, JSON.stringify(jsonObj), dbname, relationName, ID);
+                alert(reqString);
+                jQuery.ajaxSetup({async: false});
+                var resultObj = executeCommand(reqString,
+                        "http://api.login2explore.com:5577", "/api/iml");
+                jQuery.ajaxSetup({async: true});
+                alert(JSON.stringify(resultObj));
+
+            }
+        </script>
+    </body>
+</html>
