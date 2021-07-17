@@ -16,6 +16,7 @@ Multi-mode database - One solution to a variety of data
 
 # Description
 It is a mini-database system which implements register, update, delete and display operations of a patient record in the database using JSONPowerDB.
+(The other folders are in master branch)
 
 # Screenshots
 ![image](https://user-images.githubusercontent.com/54460464/126038118-0573903a-beb4-4d92-8114-5026859dff1f.png)
